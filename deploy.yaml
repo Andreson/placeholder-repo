@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: produc-list-mock
+  namespace: poc
+  labels:
+    app: produc-list-mock
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: produc-list-mock
+  template:
+    metadata:
+      labels:
+        app: produc-list-mock
+    spec:
+      containers:
+      - name: auth
+        image: docker.io/andresonthiago/auth-mock:1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 250m
+            memory: 328M
+          limits:
+            cpu: 360m
+            memory: 328M
+      - name: products
+        image: docker.io/andresonthiago/jsonserver:2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 150M
+
+            
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: produc-list-mock-service
+  namespace: poc
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  selector:
+    app: produc-list-mock
+  type: NodePort
+  
+---
+
+#apiVersion: v1
+#data:
+#  GET_PATH: '/corporate/integration/v1/poc/arch/service'
+#  GET_PRODUCT_PATH: '/corporate/integration/v1/poc/arch/product'
+#  GET_WS_CLIENT_HOST: 'https://6116e32f30022f0017a05c76.mockapi.io'
+#  GET_WS_CLIENT_PLACE_HOST: "http://microk8s:31380"
+#  GET_WS_CLIENT_PLACE_PATH: "/v1/products"
+#kind: ConfigMap
+#metadata:
+#  name: env-cor-arch-poc-be
+#  namespace: canary 
+#  
+---
+
+
+  
